@@ -1,0 +1,10 @@
+[
+  "The system processes incoming requests through a middleware pipeline. Each middleware component performs a specific function.",
+  "Request validation ensures all required fields are present and correctly formatted before the request reaches the",
+  "business logic layer. The validation rules are defined declaratively using a schema language.",
+  "Rate limiting protects backend services from excessive traffic. When a client exceeds the configured threshold,",
+  "subsequent requests receive a 429 status code until the rate window resets. The rate limiter uses a sliding window algorithm.",
+  "Caching reduces database load by storing frequently accessed data in memory. Cache invalidation follows a write-through",
+  "pattern that ensures consistency between the cache and the underlying data store. TTL values are configured per resource type.",
+  "The monitoring stack collects metrics from all services. Dashboards visualize key performance indicators in real time."
+]
