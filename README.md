@@ -3,6 +3,7 @@
 Analyze text chunk boundaries, score boundary quality, and recommend optimal overlap size for RAG chunking pipelines.
 
 [![npm version](https://img.shields.io/npm/v/chunk-overlap-optimizer.svg)](https://www.npmjs.com/package/chunk-overlap-optimizer)
+[![npm downloads](https://img.shields.io/npm/dt/chunk-overlap-optimizer.svg)](https://www.npmjs.com/package/chunk-overlap-optimizer)
 [![license](https://img.shields.io/npm/l/chunk-overlap-optimizer.svg)](https://opensource.org/licenses/MIT)
 [![node](https://img.shields.io/node/v/chunk-overlap-optimizer.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
