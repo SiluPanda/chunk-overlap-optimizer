@@ -170,4 +170,77 @@ describe('analyzeBoundaryCore', () => {
     expect(result.adjustedOverlap).toBe(result.minOverlap);
     expect(result.semanticContinuity).toBeUndefined();
   });
+
+  it('detects mid-sentence when tail ends with abbreviation (Dr.)', () => {
+    const result = analyzeBoundaryCore(
+      'The patient should see Dr.',
+      'Smith for a consultation tomorrow.',
+      defaultOpts,
+    );
+    expect(result.isMidSentence).toBe(true);
+    expect(result.minOverlap).toBeGreaterThan(0);
+    expect(result.tailFragment.length).toBeGreaterThan(0);
+  });
+
+  it('detects mid-sentence when tail ends with abbreviation (Mr.)', () => {
+    const result = analyzeBoundaryCore(
+      'She met with Mr.',
+      'Johnson at the office yesterday.',
+      defaultOpts,
+    );
+    expect(result.isMidSentence).toBe(true);
+    expect(result.minOverlap).toBeGreaterThan(0);
+  });
+
+  it('detects mid-sentence when tail ends with abbreviation (etc.)', () => {
+    const result = analyzeBoundaryCore(
+      'They brought food, drinks, etc.',
+      'Everything was ready for the party.',
+      defaultOpts,
+    );
+    expect(result.isMidSentence).toBe(true);
+    expect(result.minOverlap).toBeGreaterThan(0);
+  });
+
+  it('still detects clean boundary for real sentence endings', () => {
+    const result = analyzeBoundaryCore(
+      'The system validates all requests.',
+      'Each token is verified.',
+      defaultOpts,
+    );
+    expect(result.isMidSentence).toBe(false);
+    expect(result.minOverlap).toBe(0);
+  });
+
+  it('handles abbreviation in quotes at tail end', () => {
+    const result = analyzeBoundaryCore(
+      'She said "call me Dr.',
+      'Smith" and left the room.',
+      defaultOpts,
+    );
+    // "Dr." is an abbreviation; this is mid-sentence
+    expect(result.isMidSentence).toBe(true);
+  });
+
+  it('detects mid-sentence with custom abbreviation at tail end', () => {
+    const opts = resolveOptions({ abbreviations: ['Fig'] });
+    const result = analyzeBoundaryCore(
+      'As shown in Fig.',
+      '3, the results are clear.',
+      opts,
+    );
+    expect(result.isMidSentence).toBe(true);
+    expect(result.minOverlap).toBeGreaterThan(0);
+  });
+
+  it('correctly handles sentence after abbreviation in tail', () => {
+    const result = analyzeBoundaryCore(
+      'She met Dr. Smith. The appointment went well.',
+      'They discussed the results.',
+      defaultOpts,
+    );
+    // Tail ends with a real sentence ("The appointment went well.")
+    expect(result.isMidSentence).toBe(false);
+    expect(result.minOverlap).toBe(0);
+  });
 });
