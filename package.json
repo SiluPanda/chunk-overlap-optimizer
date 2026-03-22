@@ -1,6 +1,6 @@
 {
   "name": "chunk-overlap-optimizer",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Analyze chunk boundaries and recommend optimal overlap size",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
