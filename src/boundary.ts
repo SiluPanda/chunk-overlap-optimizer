@@ -2,6 +2,7 @@ import type { BoundaryAnalysis, ResolvedOptions } from './types.js';
 import { extractTailWindow, extractHeadWindow } from './window.js';
 import { detectSentenceBoundaries } from './sentence/index.js';
 import { detectParagraphBreaks } from './sentence/paragraph.js';
+import { isAbbreviation, compileAbbreviations } from './sentence/abbreviations.js';
 import { computeQualityScore } from './quality.js';
 import { computeMinOverlap, computeAdjustedOverlap } from './overlap.js';
 
@@ -34,26 +35,69 @@ function computeAverageSentenceLength(
 }
 
 /**
+ * Extract the word token immediately before a period at the given index.
+ * Used to check if a trailing period is part of an abbreviation.
+ */
+function extractTokenBeforePeriod(text: string, periodIndex: number): string {
+  let end = periodIndex;
+  // Walk back past any preceding periods (for abbreviations like "e.g.")
+  while (end > 0 && text[end - 1] === '.') end--;
+  let start = end;
+  while (start > 0 && /[a-zA-Z]/.test(text[start - 1])) start--;
+  return text.slice(start, end);
+}
+
+/**
+ * Check if a trailing period is part of an abbreviation rather than a
+ * sentence terminator. Checks the token before the period against built-in
+ * and custom abbreviation lists.
+ */
+function isTrailingPeriodAbbreviation(
+  text: string,
+  periodIndex: number,
+  customAbbreviations?: ReadonlySet<string>,
+): boolean {
+  const token = extractTokenBeforePeriod(text, periodIndex);
+  return token.length > 0 && isAbbreviation(token, customAbbreviations);
+}
+
+/**
  * Check if the text ends at a sentence boundary:
  * ends with sentence-terminal punctuation (., !, ?) optionally followed
- * by closing quotes and/or whitespace.
+ * by closing quotes and/or whitespace. Periods that are part of known
+ * abbreviations (Dr., Mr., etc.) are NOT treated as sentence boundaries.
  */
-function endsAtSentenceBoundary(text: string): boolean {
+function endsAtSentenceBoundary(
+  text: string,
+  customAbbreviations?: ReadonlySet<string>,
+): boolean {
   const trimmed = text.trimEnd();
   if (trimmed.length === 0) return true;
   const lastChar = trimmed[trimmed.length - 1];
-  // Check for .  !  ?  ."  !'  ?"  etc.
-  if (lastChar === '.' || lastChar === '!' || lastChar === '?') return true;
+  // Check for !  ?
+  if (lastChar === '!' || lastChar === '?') return true;
+  // Check for . — but not if it's an abbreviation
+  if (lastChar === '.') {
+    return !isTrailingPeriodAbbreviation(trimmed, trimmed.length - 1, customAbbreviations);
+  }
+  // Check for ." !' ?" etc.
   if (lastChar === '"' || lastChar === "'" || lastChar === '\u201D' || lastChar === '\u2019') {
     if (trimmed.length >= 2) {
       const prev = trimmed[trimmed.length - 2];
-      if (prev === '.' || prev === '!' || prev === '?') return true;
+      if (prev === '!' || prev === '?') return true;
+      if (prev === '.') {
+        return !isTrailingPeriodAbbreviation(trimmed, trimmed.length - 2, customAbbreviations);
+      }
     }
   }
+  // Check for .)
   if (lastChar === ')') {
     if (trimmed.length >= 2) {
       const prev = trimmed[trimmed.length - 2];
-      if (prev === '.' || prev === '!' || prev === '?') return true;
+      if (prev === '!' || prev === '?') return true;
+      if (prev === '.') {
+        return !isTrailingPeriodAbbreviation(trimmed, trimmed.length - 2, customAbbreviations);
+      }
     }
   }
   return false;
@@ -110,6 +154,11 @@ export function analyzeBoundaryCore(
     ? (t: string) => t.length
     : tokenCounter;
 
+  // Compile custom abbreviations once for reuse
+  const compiledAbbrevs = abbreviations.length > 0
+    ? compileAbbreviations(abbreviations)
+    : undefined;
+
   // Step 1: Extract windows
   const tailWindow = extractTailWindow(chunkEnd, windowSize, sizeUnit, tokenCounter);
   const headWindow = extractHeadWindow(nextChunkStart, windowSize, sizeUnit, tokenCounter);
@@ -130,7 +179,7 @@ export function analyzeBoundaryCore(
     : 0;
 
   let tailFragment: string;
-  if (endsAtSentenceBoundary(tailWindow)) {
+  if (endsAtSentenceBoundary(tailWindow, compiledAbbrevs)) {
     // The tail ends at a sentence boundary — clean split from the tail side
     tailFragment = '';
   } else if (tailSentenceBoundaries.length > 0) {
