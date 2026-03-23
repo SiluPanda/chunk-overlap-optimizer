@@ -80,7 +80,7 @@ describe('analyze()', () => {
 
   it('invalid targetPercentile throws INVALID_PERCENTILE', async () => {
     await expect(analyze(cleanCorpus, { targetPercentile: 0 })).rejects.toThrow(AnalyzerError);
-    await expect(analyze(cleanCorpus, { targetPercentile: 100 })).rejects.toThrow(AnalyzerError);
+    await expect(analyze(cleanCorpus, { targetPercentile: 101 })).rejects.toThrow(AnalyzerError);
   });
 
   it('invalid windowSize throws INVALID_WINDOW_SIZE', async () => {

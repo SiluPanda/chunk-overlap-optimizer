@@ -10,7 +10,7 @@
 
 - [x] **Install dev dependencies** — Add `typescript`, `vitest`, `eslint`, and `@types/node` as devDependencies in `package.json`. Ensure no runtime dependencies are added. | Status: done
 
-- [ ] **Add `bin` field to `package.json` for CLI** — Add `"bin": { "chunk-overlap-optimizer": "dist/cli/index.js" }` to `package.json` so the CLI is available after global install or via npx. | Status: not_done
+- [ ] **Add `bin` field to `package.json` for CLI** — Add `"bin": { "chunk-overlap-optimizer": "dist/cli/index.js" }` to `package.json` so the CLI is available after global install or via npx. | Status: done
 
 ### 1.2 Token Counter
 
@@ -158,21 +158,21 @@
 
 ### 3.2 CLI
 
-- [ ] **Implement CLI entry point in `cli/index.ts`** — Use `parseArgs` from `node:util` (Node 18+) for argument parsing. Parse all flags from Section 12: `--percentile`, `--window`, `--unit`, `--current-overlap`, `--max-overlap`, `--abbrev`, `--format`, `--pretty`, `--boundaries`, `--histogram`, `--problem-count`, `--version`, `--help`. Read input from file argument or stdin. Add hashbang `#!/usr/bin/env node` at top. | Status: not_done
+- [ ] **Implement CLI entry point in `cli/index.ts`** — Use `parseArgs` from `node:util` (Node 18+) for argument parsing. Parse all flags from Section 12: `--percentile`, `--window`, `--unit`, `--current-overlap`, `--max-overlap`, `--abbrev`, `--format`, `--pretty`, `--boundaries`, `--histogram`, `--problem-count`, `--version`, `--help`. Read input from file argument or stdin. Add hashbang `#!/usr/bin/env node` at top. | Status: done
 
-- [ ] **Implement JSON input parsing in CLI** — Auto-detect input format: if first element is a string, treat as plain chunk array; if first element is an object, extract `.content` field from each element (chunk-smart output format). Validate input is a valid JSON array. Handle parse errors gracefully with exit code 1. | Status: not_done
+- [ ] **Implement JSON input parsing in CLI** — Auto-detect input format: if first element is a string, treat as plain chunk array; if first element is an object, extract `.content` field from each element (chunk-smart output format). Validate input is a valid JSON array. Handle parse errors gracefully with exit code 1. | Status: done
 
-- [ ] **Implement text output format in CLI** — Format the `OverlapRecommendation` as human-readable text matching the example in Section 12: header, chunk/boundary counts, average quality with interpretation, mid-sentence rate, recommendation with confidence, current overlap comparison (if provided), overlap distribution histogram with bar chart, and problem boundaries list with text excerpts. | Status: not_done
+- [ ] **Implement text output format in CLI** — Format the `OverlapRecommendation` as human-readable text matching the example in Section 12: header, chunk/boundary counts, average quality with interpretation, mid-sentence rate, recommendation with confidence, current overlap comparison (if provided), overlap distribution histogram with bar chart, and problem boundaries list with text excerpts. | Status: done
 
-- [ ] **Implement JSON output format in CLI** — With `--format json`, output the full `OverlapRecommendation` as JSON. With `--pretty`, pretty-print with 2-space indentation. With `--boundaries`, include the full boundaries array. Without `--boundaries`, omit the boundaries array from JSON output (it can be very large). | Status: not_done
+- [ ] **Implement JSON output format in CLI** — With `--format json`, output the full `OverlapRecommendation` as JSON. With `--pretty`, pretty-print with 2-space indentation. With `--boundaries`, include the full boundaries array. Without `--boundaries`, omit the boundaries array from JSON output (it can be very large). | Status: done
 
-- [ ] **Implement CLI exit codes** — Exit 0 on success. Exit 1 on input errors (file not found, invalid JSON). Exit 2 on configuration errors (invalid flags). Exit 3 on insufficient input (fewer than 2 chunks). Exit 4 when `--current-overlap` is set and the comparison status is 'insufficient'. | Status: not_done
+- [ ] **Implement CLI exit codes** — Exit 0 on success. Exit 1 on input errors (file not found, invalid JSON). Exit 2 on configuration errors (invalid flags). Exit 3 on insufficient input (fewer than 2 chunks). Exit 4 when `--current-overlap` is set and the comparison status is 'insufficient'. | Status: done
 
-- [ ] **Implement `--version` and `--help` flags** — `--version` prints the version from package.json and exits. `--help` prints usage information matching the flag reference in Section 12 and exits. | Status: not_done
+- [ ] **Implement `--version` and `--help` flags** — `--version` prints the version from package.json and exits. `--help` prints usage information matching the flag reference in Section 12 and exits. | Status: done
 
-- [ ] **Write CLI tests in `src/__tests__/cli.test.ts`** — Spawn the CLI as a child process for each test. Test file input with a JSON file path. Test stdin input (pipe JSON array). Test chunk-smart format input (array of objects with `content` field). Test `--format json` produces valid JSON. Test `--format json --pretty` produces indented JSON. Test `--percentile 95` flag. Test `--window 64` flag. Test `--unit chars` flag. Test `--current-overlap` flag. Test `--abbrev API,SDK` flag. Test `--problem-count 3` flag. Test `--boundaries` flag includes boundaries in JSON output. Test `--histogram` flag shows histogram in text output. | Status: not_done
+- [ ] **Write CLI tests in `src/__tests__/cli.test.ts`** — Spawn the CLI as a child process for each test. Test file input with a JSON file path. Test stdin input (pipe JSON array). Test chunk-smart format input (array of objects with `content` field). Test `--format json` produces valid JSON. Test `--format json --pretty` produces indented JSON. Test `--percentile 95` flag. Test `--window 64` flag. Test `--unit chars` flag. Test `--current-overlap` flag. Test `--abbrev API,SDK` flag. Test `--problem-count 3` flag. Test `--boundaries` flag includes boundaries in JSON output. Test `--histogram` flag shows histogram in text output. | Status: done
 
-- [ ] **Write CLI exit code tests in `src/__tests__/cli.test.ts`** — Test exit code 0 on successful analysis. Test exit code 1 on file not found. Test exit code 1 on invalid JSON input. Test exit code 2 on invalid/unrecognized flags. Test exit code 3 on single-chunk input. Test exit code 4 when `--current-overlap` is below recommendation. Test exit code 0 when `--current-overlap` is adequate. | Status: not_done
+- [ ] **Write CLI exit code tests in `src/__tests__/cli.test.ts`** — Test exit code 0 on successful analysis. Test exit code 1 on file not found. Test exit code 1 on invalid JSON input. Test exit code 2 on invalid/unrecognized flags. Test exit code 3 on single-chunk input. Test exit code 4 when `--current-overlap` is below recommendation. Test exit code 0 when `--current-overlap` is adequate. | Status: done
 
 ---
 
@@ -180,52 +180,52 @@
 
 ### 4.1 Edge Case Hardening
 
-- [ ] **Handle whitespace-only chunks** — Chunks containing only whitespace should produce quality score 0.0 and minOverlap 0. Sentence detector should return empty array. Add test cases. | Status: not_done
+- [x] **Handle whitespace-only chunks** — Chunks containing only whitespace should produce quality score 0.0 and minOverlap 0. Sentence detector should return empty array. Add test cases. | Status: done
 
-- [ ] **Handle very long sentences exceeding `maxOverlap`** — When a sentence fragment is longer than `maxOverlap` tokens, the recommendation must be capped at `maxOverlap`. Verify this works correctly end-to-end. Add test cases. | Status: not_done
+- [x] **Handle very long sentences exceeding `maxOverlap`** — When a sentence fragment is longer than `maxOverlap` tokens, the recommendation must be capped at `maxOverlap`. Verify this works correctly end-to-end. Add test cases. | Status: done
 
-- [ ] **Handle Unicode and non-ASCII text** — Test sentence detection with CJK characters, emoji, RTL text, and Unicode sentence-terminal punctuation (`。`, `！`, `？`). Ensure the scanner recognizes Unicode sentence boundaries where appropriate. Add test cases. | Status: not_done
+- [x] **Handle Unicode and non-ASCII text** — Test sentence detection with CJK characters, emoji, RTL text, and Unicode sentence-terminal punctuation (`。`, `！`, `？`). Ensure the scanner recognizes Unicode sentence boundaries where appropriate. Add test cases. | Status: done
 
-- [ ] **Handle mixed line endings** — Ensure paragraph detection works with `\r\n`, `\r`, and `\n` line endings, including mixed usage within the same text. Add test cases. | Status: not_done
+- [x] **Handle mixed line endings** — Ensure paragraph detection works with `\r\n`, `\r`, and `\n` line endings, including mixed usage within the same text. Add test cases. | Status: done
 
-- [ ] **Handle code chunks (non-prose)** — When chunks contain code with no prose sentences, the sentence detector should find no boundaries. The boundary should be treated with a neutral quality score. Add test cases. | Status: not_done
+- [x] **Handle code chunks (non-prose)** — When chunks contain code with no prose sentences, the sentence detector should find no boundaries. The boundary should be treated with a neutral quality score. Add test cases. | Status: done
 
-- [ ] **Handle chunks with trailing/leading whitespace only** — Verify these are treated as clean boundaries. Add test cases. | Status: not_done
+- [x] **Handle chunks with trailing/leading whitespace only** — Verify these are treated as clean boundaries. Add test cases. | Status: done
 
-- [ ] **Handle `targetPercentile: 50`** — Verify it returns the median overlap requirement. | Status: not_done
+- [x] **Handle `targetPercentile: 50`** — Verify it returns the median overlap requirement. | Status: done
 
-- [ ] **Handle `targetPercentile: 100`** — Verify it returns the maximum overlap requirement. | Status: not_done
+- [x] **Handle `targetPercentile: 100`** — Verify it returns the maximum overlap requirement. | Status: done
 
 ### 4.2 Custom Sentence Detector Validation
 
-- [ ] **Validate custom `sentenceDetector` output** — When a caller-supplied `sentenceDetector` is provided, validate that it returns a sorted array of integers within bounds (0 to text.length). Throw `AnalyzerError` with `INVALID_SENTENCE_DETECTOR` if validation fails. | Status: not_done
+- [x] **Validate custom `sentenceDetector` output** — When a caller-supplied `sentenceDetector` is provided, validate that it returns a sorted array of integers within bounds (0 to text.length). Throw `AnalyzerError` with `INVALID_SENTENCE_DETECTOR` if validation fails. | Status: done
 
-- [ ] **Write tests for custom sentence detector validation** — Test valid custom detector works. Test detector returning non-array throws. Test detector returning non-integer positions throws. Test detector returning out-of-bounds positions throws. Test detector returning unsorted positions throws. | Status: not_done
+- [x] **Write tests for custom sentence detector validation** — Test valid custom detector works. Test detector returning non-array throws. Test detector returning non-integer positions throws. Test detector returning out-of-bounds positions throws. Test detector returning unsorted positions throws. | Status: done
 
 ### 4.3 Performance
 
-- [ ] **Benchmark sentence scanner performance** — Profile the sentence scanner against the performance targets in Section 16. 10 chunks < 1ms, 100 chunks < 5ms, 500 chunks < 20ms, 1000 chunks < 50ms (without embeddings, on approximate token counter). Optimize hot paths if targets are not met. | Status: not_done
+- [ ] **Benchmark sentence scanner performance** — Profile the sentence scanner against the performance targets in Section 16. 10 chunks < 1ms, 100 chunks < 5ms, 500 chunks < 20ms, 1000 chunks < 50ms (without embeddings, on approximate token counter). Optimize hot paths if targets are not met. | Status: done
 
-- [ ] **Benchmark corpus analysis loop** — Profile the full `recommend()` pipeline without embeddings. Verify it meets the performance targets. Identify and fix any bottlenecks. | Status: not_done
+- [ ] **Benchmark corpus analysis loop** — Profile the full `recommend()` pipeline without embeddings. Verify it meets the performance targets. Identify and fix any bottlenecks. | Status: done
 
-- [ ] **Verify no memory amplification** — Confirm boundary analysis objects contain window text substrings but not copies of full chunks. Output size should be proportional to `K * 2 * windowSize`. | Status: not_done
+- [ ] **Verify no memory amplification** — Confirm boundary analysis objects contain window text substrings but not copies of full chunks. Output size should be proportional to `K * 2 * windowSize`. | Status: done
 
 ### 4.4 Documentation
 
 - [x] **Write comprehensive README.md** — Cover: installation, quick start example, `recommend()` usage, `analyze()` usage, `analyzeBoundary()` usage, `createAnalyzer()` factory usage, all configuration options with defaults, CLI usage with examples, two-pass `chunk-smart` workflow, CI/CD quality gate pattern, embedding integration with `embed-cache`, interpreting the report (recommended, confidence, histogram, problem boundaries, current overlap comparison), custom sentence detector, custom token counter, error handling (`AnalyzerError` codes), performance characteristics. | Status: done
 
-- [ ] **Add JSDoc comments to all public API functions** — Ensure `recommend()`, `analyze()`, `analyzeBoundary()`, `createAnalyzer()`, and `AnalyzerError` have comprehensive JSDoc comments matching the spec descriptions, including parameter descriptions, return type descriptions, and usage examples. | Status: not_done
+- [ ] **Add JSDoc comments to all public API functions** — Ensure `recommend()`, `analyze()`, `analyzeBoundary()`, `createAnalyzer()`, and `AnalyzerError` have comprehensive JSDoc comments matching the spec descriptions, including parameter descriptions, return type descriptions, and usage examples. | Status: done
 
 ### 4.5 Build and Publish Preparation
 
-- [ ] **Verify TypeScript compilation** — Run `npm run build` and confirm all source files compile without errors. Verify `dist/` output contains `.js`, `.d.ts`, and `.d.ts.map` files for all modules. | Status: not_done
+- [x] **Verify TypeScript compilation** — Run `npm run build` and confirm all source files compile without errors. Verify `dist/` output contains `.js`, `.d.ts`, and `.d.ts.map` files for all modules. | Status: done
 
-- [ ] **Verify ESLint passes** — Run `npm run lint` and fix any linting errors. Ensure the codebase is clean. | Status: not_done
+- [x] **Verify ESLint passes** — Run `npm run lint` and fix any linting errors. Ensure the codebase is clean. | Status: done
 
-- [ ] **Verify all tests pass** — Run `npm run test` (vitest run) and confirm all unit, integration, and CLI tests pass. | Status: not_done
+- [x] **Verify all tests pass** — Run `npm run test` (vitest run) and confirm all unit, integration, and CLI tests pass. | Status: done
 
-- [ ] **Verify CLI works end-to-end** — Install the package locally (`npm link` or equivalent), run `chunk-overlap-optimizer` on a test JSON file, verify text and JSON output formats work correctly. | Status: not_done
+- [ ] **Verify CLI works end-to-end** — Install the package locally (`npm link` or equivalent), run `chunk-overlap-optimizer` on a test JSON file, verify text and JSON output formats work correctly. | Status: done
 
-- [ ] **Bump version to 1.0.0** — Update `version` in `package.json` to `1.0.0` for production release. | Status: not_done
+- [ ] **Bump version to 1.0.0** — Update `version` in `package.json` to `1.0.0` for production release. | Status: done
 
-- [ ] **Verify `files` field in `package.json`** — Ensure only `dist` is included in the published package. Verify the CLI binary path is correct in the `bin` field. | Status: not_done
+- [ ] **Verify `files` field in `package.json`** — Ensure only `dist` is included in the published package. Verify the CLI binary path is correct in the `bin` field. | Status: done

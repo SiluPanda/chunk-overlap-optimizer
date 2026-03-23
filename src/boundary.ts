@@ -5,6 +5,7 @@ import { detectParagraphBreaks } from './sentence/paragraph.js';
 import { isAbbreviation, compileAbbreviations } from './sentence/abbreviations.js';
 import { computeQualityScore } from './quality.js';
 import { computeMinOverlap, computeAdjustedOverlap } from './overlap.js';
+import { AnalyzerError } from './errors.js';
 
 /**
  * Compute the average sentence length from detected sentence boundaries in text.
@@ -127,6 +128,29 @@ function isMidWordSplit(tailWindow: string, headWindow: string): boolean {
 }
 
 /**
+ * Validate the output of a custom sentence detector.
+ * Must return a sorted array of integers within [0, textLength].
+ */
+function validateSentenceDetectorOutput(result: unknown, textLength: number): number[] {
+  if (!Array.isArray(result)) {
+    throw new AnalyzerError('INVALID_SENTENCE_DETECTOR', 'sentenceDetector must return an array');
+  }
+  for (let i = 0; i < result.length; i++) {
+    const pos = result[i];
+    if (typeof pos !== 'number' || !Number.isInteger(pos)) {
+      throw new AnalyzerError('INVALID_SENTENCE_DETECTOR', `sentenceDetector returned non-integer at index ${i}`, { index: i, value: pos });
+    }
+    if (pos < 0 || pos > textLength) {
+      throw new AnalyzerError('INVALID_SENTENCE_DETECTOR', `sentenceDetector returned out-of-bounds position ${pos}`, { index: i, value: pos, textLength });
+    }
+    if (i > 0 && pos < result[i - 1]) {
+      throw new AnalyzerError('INVALID_SENTENCE_DETECTOR', 'sentenceDetector must return positions in sorted ascending order');
+    }
+  }
+  return result as number[];
+}
+
+/**
  * Analyze a single boundary between two chunks.
  *
  * Integrates window extraction, sentence detection, quality scoring,
@@ -165,10 +189,10 @@ export function analyzeBoundaryCore(
 
   // Step 2: Detect sentence boundaries
   const tailSentenceBoundaries = sentenceDetector
-    ? sentenceDetector(tailWindow)
+    ? validateSentenceDetectorOutput(sentenceDetector(tailWindow), tailWindow.length)
     : detectSentenceBoundaries(tailWindow, { abbreviations });
   const headSentenceBoundaries = sentenceDetector
-    ? sentenceDetector(headWindow)
+    ? validateSentenceDetectorOutput(sentenceDetector(headWindow), headWindow.length)
     : detectSentenceBoundaries(headWindow, { abbreviations });
 
   // Step 3: Compute fragments
