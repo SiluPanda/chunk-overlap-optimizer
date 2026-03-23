@@ -28,8 +28,8 @@ function validateInput(chunks: string[], options: ResolvedOptions): void {
       chunkCount: chunks.length,
     });
   }
-  if (options.targetPercentile < 1 || options.targetPercentile > 99) {
-    throw new AnalyzerError('INVALID_PERCENTILE', 'targetPercentile must be between 1 and 99', {
+  if (options.targetPercentile < 1 || options.targetPercentile > 100) {
+    throw new AnalyzerError('INVALID_PERCENTILE', 'targetPercentile must be between 1 and 100', {
       targetPercentile: options.targetPercentile,
     });
   }
