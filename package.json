@@ -1,6 +1,6 @@
 {
   "name": "chunk-overlap-optimizer",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Analyze chunk boundaries and recommend optimal overlap size",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
-    "lint": "eslint dist/",
+    "lint": "eslint src/",
     "prepublishOnly": "npm run build"
   },
   "keywords": [],
@@ -25,6 +25,8 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^25.5.0",
+    "@typescript-eslint/eslint-plugin": "^8.57.2",
+    "@typescript-eslint/parser": "^8.57.2",
     "eslint": "^10.1.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"
